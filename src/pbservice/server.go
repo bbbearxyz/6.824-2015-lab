@@ -1,6 +1,8 @@
 package pbservice
 
-import "net"
+import (
+	"net"
+)
 import "fmt"
 import "net/rpc"
 import "log"
@@ -22,8 +24,22 @@ type PBServer struct {
 	me         string
 	vs         *viewservice.Clerk
 	// Your declarations here.
+
+	state	   State
+	primary	   string
+	backup	   string
+	dataMap    map[string] string
+	dumpMap	   map[int64] int
+
+
 }
 
+type State string
+
+const (
+	Primary	State = "Primary"
+	Backup	State = "Backup"
+)
 
 func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 
@@ -40,7 +56,57 @@ func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error 
 
 	return nil
 }
+// 会有两种类型 一个是发送get/put/append命令 一种是发送完整的信息
+type SendArgs struct {
+	Type	int
+	Host	string
+	// 只发送get/put/append命令
+	ClerkId int64
+	ReqId	int
+	Op 		string
+	key 	string
+	value 	string
+	// 发送全部信息
+	DataMap map[string] string
+	DumpMap	map[int64] int
 
+}
+
+type SendReply struct {
+	err Err
+}
+
+
+func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	if args.Host == pb.primary {
+		if args.Type == 0 {
+			if pb.dumpMap[args.ClerkId] >= args.ReqId {
+				reply.err = OK
+				return
+			}
+			pb.dumpMap[args.ClerkId] = args.ReqId
+			if args.Op == "Get" {
+				// do nothing
+			} else if args.Op == "Append" {
+				pb.dataMap[args.key] += args.value
+			} else if args.Op == "Put" {
+				pb.dataMap[args.key] = args.value
+			}
+			reply.err = OK
+			return
+		} else {
+			pb.dataMap = args.DataMap
+			pb.dumpMap = args.DumpMap
+			reply.err = OK
+			return
+		}
+	} else {
+		reply.err = ErrWrongPrimary
+		return
+	}
+}
 
 //
 // ping the viewserver periodically.

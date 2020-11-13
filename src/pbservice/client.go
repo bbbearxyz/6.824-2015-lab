@@ -1,6 +1,10 @@
 package pbservice
 
-import "viewservice"
+import (
+	"sync"
+	"time"
+	"viewservice"
+)
 import "net/rpc"
 import "fmt"
 
@@ -11,6 +15,10 @@ import "math/big"
 type Clerk struct {
 	vs *viewservice.Clerk
 	// Your declarations here
+	clerkId		int64
+	reqID		int
+	startLock	sync.Mutex
+	primary		string
 }
 
 // this may come in handy.
@@ -25,7 +33,10 @@ func MakeClerk(vshost string, me string) *Clerk {
 	ck := new(Clerk)
 	ck.vs = viewservice.MakeClerk(me, vshost)
 	// Your ck.* initializations here
-
+	ck.clerkId = nrand()
+	ck.reqID = 0
+	ck.startLock = sync.Mutex{}
+	ck.primary = ""
 	return ck
 }
 
@@ -74,8 +85,29 @@ func call(srv string, rpcname string,
 func (ck *Clerk) Get(key string) string {
 
 	// Your code here.
+	ck.startLock.Lock()
+	args := GetArgs{}
+	args.ClerkId = ck.clerkId
+	ck.reqID ++
+	args.ReqId = ck.reqID
+	args.Key = key
+	server := ck.primary
+	ck.startLock.Unlock()
 
-	return "???"
+	for {
+		if server == "" {
+			server = ck.vs.Primary()
+		}
+		reply := GetReply{}
+		ok := call(server, "PBServer.Get", args, &reply)
+		if ok && (reply.Err == OK || reply.Err == ErrNoKey) {
+			ck.primary = server
+			return reply.Value
+		}
+		time.Sleep(viewservice.PingInterval)
+	}
+
+	return ""
 }
 
 //
@@ -84,6 +116,30 @@ func (ck *Clerk) Get(key string) string {
 func (ck *Clerk) PutAppend(key string, value string, op string) {
 
 	// Your code here.
+	ck.startLock.Lock()
+	args := PutAppendArgs{}
+	args.ClerkId = ck.clerkId
+	ck.reqID ++
+	args.ReqId = ck.reqID
+	args.Key = key
+	args.Value = value
+	args.Op = op
+	server := ck.primary
+	ck.startLock.Unlock()
+
+	for {
+		if server == "" {
+			server = ck.vs.Primary()
+		}
+		reply := PutAppendReply{}
+		ok := call(server, "PBServer.PutAppend", args, &reply)
+		if ok && reply.Err == OK {
+			ck.primary = server
+			return
+		}
+		time.Sleep(viewservice.PingInterval)
+	}
+	return
 }
 
 //
