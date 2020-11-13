@@ -25,26 +25,50 @@ type PBServer struct {
 	vs         *viewservice.Clerk
 	// Your declarations here.
 
-	state	   State
-	primary	   string
-	backup	   string
+	curView	   viewservice.View
 	dataMap    map[string] string
 	dumpMap	   map[int64] int
 
 
 }
 
-type State string
-
-const (
-	Primary	State = "Primary"
-	Backup	State = "Backup"
-)
-
 func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 
 	// Your code here.
-
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	if pb.curView.Primary != pb.me {
+		reply.Err = ErrWrongPrimary
+		return nil
+	}
+	if pb.dumpMap[args.ClerkId] >= args.ReqId {
+		reply.Err = OK
+		return nil
+	}
+	pb.dumpMap[args.ClerkId] = args.ReqId
+	value, exist := pb.dataMap[args.Key]
+	if exist != false {
+		reply.Err = ErrNoKey
+	} else {
+		reply.Err = OK
+	}
+	reply.Value = value
+	newArgs := &SendArgs{
+		Type: 0,
+		Host: pb.me,
+		ClerkId: args.ClerkId,
+		ReqId: args.ReqId,
+		Op: "Get",
+		Key: args.Key,
+	}
+	for pb.curView.Backup != "" {
+		newReply := SendReply{}
+		call(pb.curView.Backup, "PBServer.ReadBackupOp", newArgs, &newReply)
+		if newReply.SendErr == OK {
+			break
+		}
+		time.Sleep(viewservice.PingInterval)
+	}
 	return nil
 }
 
@@ -52,7 +76,39 @@ func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error {
 
 	// Your code here.
-
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	if pb.curView.Primary != pb.me {
+		reply.Err = ErrWrongPrimary
+		return nil
+	}
+	if pb.dumpMap[args.ClerkId] >= args.ReqId {
+		reply.Err = OK
+		return nil
+	}
+	pb.dumpMap[args.ClerkId] = args.ReqId
+	if args.Op == "Put" {
+		pb.dataMap[args.Key] = args.Value
+	} else {
+		pb.dataMap[args.Key] += args.Value
+	}
+	newArgs := &SendArgs{
+		Type: 0,
+		Host: pb.me,
+		ClerkId: args.ClerkId,
+		ReqId: args.ReqId,
+		Op: args.Op,
+		Key: args.Key,
+		Value: args.Value,
+	}
+	for pb.curView.Backup != "" {
+		newReply := SendReply{}
+		call(pb.curView.Backup, "PBServer.ReadBackupOp", newArgs, &newReply)
+		if newReply.SendErr == OK {
+			break
+		}
+		time.Sleep(viewservice.PingInterval)
+	}
 
 	return nil
 }
@@ -64,8 +120,8 @@ type SendArgs struct {
 	ClerkId int64
 	ReqId	int
 	Op 		string
-	key 	string
-	value 	string
+	Key 	string
+	Value 	string
 	// 发送全部信息
 	DataMap map[string] string
 	DumpMap	map[int64] int
@@ -73,38 +129,39 @@ type SendArgs struct {
 }
 
 type SendReply struct {
-	err Err
+	SendErr Err
 }
 
 
-func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) {
+func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) error {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-	if args.Host == pb.primary {
+
+	if args.Host == pb.curView.Primary {
 		if args.Type == 0 {
 			if pb.dumpMap[args.ClerkId] >= args.ReqId {
-				reply.err = OK
-				return
+				reply.SendErr = OK
+				return nil
 			}
 			pb.dumpMap[args.ClerkId] = args.ReqId
 			if args.Op == "Get" {
 				// do nothing
 			} else if args.Op == "Append" {
-				pb.dataMap[args.key] += args.value
+				pb.dataMap[args.Key] += args.Value
 			} else if args.Op == "Put" {
-				pb.dataMap[args.key] = args.value
+				pb.dataMap[args.Key] = args.Value
 			}
-			reply.err = OK
-			return
+			reply.SendErr = OK
+			return nil
 		} else {
 			pb.dataMap = args.DataMap
 			pb.dumpMap = args.DumpMap
-			reply.err = OK
-			return
+			reply.SendErr = OK
+			return nil
 		}
 	} else {
-		reply.err = ErrWrongPrimary
-		return
+		reply.SendErr = ErrWrongPrimary
+		return nil
 	}
 }
 
@@ -117,6 +174,28 @@ func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) {
 func (pb *PBServer) tick() {
 
 	// Your code here.
+	timer := time.After(viewservice.PingInterval)
+	for !pb.isdead() {
+		select {
+		case <- timer :
+			timer = time.After(viewservice.PingInterval)
+			view, _ := pb.vs.Ping(pb.curView.Viewnum)
+			if view.Viewnum != pb.curView.Viewnum {
+				// 发现pb变成了primary 并且还存在backup
+				log.Printf("view num change to %d.", view.Viewnum)
+				if view.Primary == pb.me && pb.curView.Primary == pb.me && view.Backup != "" && pb.curView.Backup == "" {
+					args := &SendArgs{
+						Type: 1,
+						DataMap: pb.dataMap,
+						DumpMap: pb.dumpMap,
+					}
+					reply := SendReply{}
+					call(view.Backup, "PBServer.ReadBackupOp", args, &reply)
+				}
+				pb.curView = view
+			}
+		}
+	}
 }
 
 // tell the server to shut itself down.
@@ -150,7 +229,11 @@ func StartServer(vshost string, me string) *PBServer {
 	pb.me = me
 	pb.vs = viewservice.MakeClerk(me, vshost)
 	// Your pb.* initializations here.
-
+	pb.curView = viewservice.View{
+		Viewnum: 0,
+	}
+	pb.dataMap = make(map[string] string)
+	pb.dumpMap	= make(map[int64] int)
 	rpcs := rpc.NewServer()
 	rpcs.Register(pb)
 

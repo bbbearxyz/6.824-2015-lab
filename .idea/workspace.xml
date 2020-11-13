@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -20,11 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5cd26736-037c-4521-bc5e-086d9cad166b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/6.824-2015-lab.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pbservice/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +39,7 @@
   <component name="GoLibraries">
     <option name="urls">
       <list>
-        <option value="file://$PROJECT_DIR$/src" />
+        <option value="file://$PROJECT_DIR$" />
       </list>
     </option>
   </component>
@@ -75,19 +75,20 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="360" y="191" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1605227518294">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
     <state x="360" y="191" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1792.1013@0.23.1792.1013" timestamp="1605227518294" />
-    <state x="397" y="168" key="SettingsEditor" timestamp="1605226967063">
+    <state x="397" y="168" key="SettingsEditor" timestamp="1605265032379">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state x="397" y="168" key="SettingsEditor/0.23.1792.1013@0.23.1792.1013" timestamp="1605226967063" />
-    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup" timestamp="1605227651012">
+    <state x="397" y="168" key="SettingsEditor/0.23.1792.1013@0.23.1792.1013" timestamp="1605265032379" />
+    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup" timestamp="1605264885654">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup/0.23.1792.1013@0.23.1792.1013" timestamp="1605227651012" />
+    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup/0.23.1792.1013@0.23.1792.1013" timestamp="1605264885654" />
   </component>
 </project>

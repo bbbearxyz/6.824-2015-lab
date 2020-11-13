@@ -86,7 +86,7 @@ func (ck *Clerk) Get(key string) string {
 
 	// Your code here.
 	ck.startLock.Lock()
-	args := GetArgs{}
+	args := &GetArgs{}
 	args.ClerkId = ck.clerkId
 	ck.reqID ++
 	args.ReqId = ck.reqID
@@ -117,7 +117,7 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 
 	// Your code here.
 	ck.startLock.Lock()
-	args := PutAppendArgs{}
+	args := &PutAppendArgs{}
 	args.ClerkId = ck.clerkId
 	ck.reqID ++
 	args.ReqId = ck.reqID
