@@ -36,7 +36,7 @@ func (vs *ViewServer) Ping(args *PingArgs, reply *PingReply) error {
 	// Your code here.
 	vs.mu.Lock()
 	defer vs.mu.Unlock()
-	fmt.Printf("%s ping. now Primary is %s, now Backup is %s.\n", args.Me, vs.currentView.Primary, vs.currentView.Backup)
+	// fmt.Printf("%s ping. now Primary is %s, now Backup is %s.\n", args.Me, vs.currentView.Primary, vs.currentView.Backup)
 	// 如果是primary和backup都存在 则ping就是idle
 	if args.Viewnum == 0 && vs.currentView.Primary != "" && vs.currentView.Primary != args.Me && vs.currentView.Backup != "" && vs.currentView.Backup != args.Me {
 		vs.idle = args.Me

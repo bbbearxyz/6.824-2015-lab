@@ -45,14 +45,7 @@ func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 		reply.Err = OK
 		return nil
 	}
-	pb.dumpMap[args.ClerkId] = args.ReqId
-	value, exist := pb.dataMap[args.Key]
-	if exist != false {
-		reply.Err = ErrNoKey
-	} else {
-		reply.Err = OK
-	}
-	reply.Value = value
+
 	newArgs := &SendArgs{
 		Type: 0,
 		Host: pb.me,
@@ -69,6 +62,14 @@ func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 		}
 		time.Sleep(viewservice.PingInterval)
 	}
+	pb.dumpMap[args.ClerkId] = args.ReqId
+	value, exist := pb.dataMap[args.Key]
+	if exist != false {
+		reply.Err = ErrNoKey
+	} else {
+		reply.Err = OK
+	}
+	reply.Value = value
 	return nil
 }
 
@@ -85,12 +86,6 @@ func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error 
 	if pb.dumpMap[args.ClerkId] >= args.ReqId {
 		reply.Err = OK
 		return nil
-	}
-	pb.dumpMap[args.ClerkId] = args.ReqId
-	if args.Op == "Put" {
-		pb.dataMap[args.Key] = args.Value
-	} else {
-		pb.dataMap[args.Key] += args.Value
 	}
 	newArgs := &SendArgs{
 		Type: 0,
@@ -109,7 +104,15 @@ func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error 
 		}
 		time.Sleep(viewservice.PingInterval)
 	}
-
+	if args.Op == "Put" {
+		pb.dataMap[args.Key] = args.Value
+		log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, args.Value)
+	} else {
+		pb.dataMap[args.Key] += args.Value
+		log.Printf("%s get append, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
+	}
+	pb.dumpMap[args.ClerkId] = args.ReqId
+	reply.Err = OK
 	return nil
 }
 // 会有两种类型 一个是发送get/put/append命令 一种是发送完整的信息
@@ -143,20 +146,23 @@ func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) error {
 				reply.SendErr = OK
 				return nil
 			}
-			pb.dumpMap[args.ClerkId] = args.ReqId
 			if args.Op == "Get" {
 				// do nothing
 			} else if args.Op == "Append" {
 				pb.dataMap[args.Key] += args.Value
+				log.Printf("%s append put, key is %s, value is %s", pb.me, args.Key, args.Value)
 			} else if args.Op == "Put" {
 				pb.dataMap[args.Key] = args.Value
+				log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
 			}
+			pb.dumpMap[args.ClerkId] = args.ReqId
 			reply.SendErr = OK
 			return nil
 		} else {
 			pb.dataMap = args.DataMap
 			pb.dumpMap = args.DumpMap
 			reply.SendErr = OK
+			log.Printf("%s get statemachine.", pb.me)
 			return nil
 		}
 	} else {
@@ -174,27 +180,24 @@ func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) error {
 func (pb *PBServer) tick() {
 
 	// Your code here.
-	timer := time.After(viewservice.PingInterval)
-	for !pb.isdead() {
-		select {
-		case <- timer :
-			timer = time.After(viewservice.PingInterval)
-			view, _ := pb.vs.Ping(pb.curView.Viewnum)
-			if view.Viewnum != pb.curView.Viewnum {
-				// 发现pb变成了primary 并且还存在backup
-				log.Printf("view num change to %d.", view.Viewnum)
-				if view.Primary == pb.me && pb.curView.Primary == pb.me && view.Backup != "" && pb.curView.Backup == "" {
-					args := &SendArgs{
-						Type: 1,
-						DataMap: pb.dataMap,
-						DumpMap: pb.dumpMap,
-					}
-					reply := SendReply{}
-					call(view.Backup, "PBServer.ReadBackupOp", args, &reply)
-				}
-				pb.curView = view
+	view, _ := pb.vs.Ping(pb.curView.Viewnum)
+	if view.Viewnum != pb.curView.Viewnum {
+		log.Printf("view num change to %d.", view.Viewnum)
+		if view.Primary == pb.me && view.Backup != "" && pb.curView.Backup != view.Backup {
+			args := &SendArgs{
+				Type: 1,
+				Host: pb.me,
+				DataMap: pb.dataMap,
+				DumpMap: pb.dumpMap,
+			}
+			reply := SendReply{}
+			log.Printf("%s send statemachine.", pb.me)
+			call(view.Backup, "PBServer.ReadBackupOp", args, &reply)
+			for reply.SendErr != OK {
+				call(view.Backup, "PBServer.ReadBackupOp", args, &reply)
 			}
 		}
+		pb.curView = view
 	}
 }
 

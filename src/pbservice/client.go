@@ -93,7 +93,6 @@ func (ck *Clerk) Get(key string) string {
 	args.Key = key
 	server := ck.primary
 	ck.startLock.Unlock()
-
 	for {
 		if server == "" {
 			server = ck.vs.Primary()
@@ -103,6 +102,10 @@ func (ck *Clerk) Get(key string) string {
 		if ok && (reply.Err == OK || reply.Err == ErrNoKey) {
 			ck.primary = server
 			return reply.Value
+		}
+		if ok == false {
+			server = ck.vs.Primary()
+			// log.Printf("client now send to %s.", server)
 		}
 		time.Sleep(viewservice.PingInterval)
 	}
@@ -128,7 +131,7 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 	ck.startLock.Unlock()
 
 	for {
-		if server == "" {
+		for server == "" {
 			server = ck.vs.Primary()
 		}
 		reply := PutAppendReply{}
@@ -136,6 +139,10 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 		if ok && reply.Err == OK {
 			ck.primary = server
 			return
+		}
+		if ok == false {
+			server = ck.vs.Primary()
+			// log.Printf("client now send to %s.", server)
 		}
 		time.Sleep(viewservice.PingInterval)
 	}

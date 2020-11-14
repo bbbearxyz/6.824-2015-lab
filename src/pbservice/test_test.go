@@ -138,7 +138,6 @@ func TestBasicFail(t *testing.T) {
 	if v.Primary != s2.me {
 		t.Fatal("backup never switched to primary")
 	}
-
 	check(ck, "1", "v1a")
 	check(ck, "3", "33")
 	check(ck, "4", "44")
@@ -422,6 +421,7 @@ func checkAppends(t *testing.T, v string, counts []int) {
 		lastoff := -1
 		for j := 0; j < counts[i]; j++ {
 			wanted := "x " + strconv.Itoa(i) + " " + strconv.Itoa(j) + " y"
+			log.Printf("wanted is %s.", wanted)
 			off := strings.Index(v, wanted)
 			if off < 0 {
 				t.Fatalf("missing element in Append result")
@@ -868,6 +868,7 @@ func TestRepeatedCrashUnreliable(t *testing.T) {
 
 	ck := MakeClerk(vshost, "")
 
+	log.Println(ck.Get("0"))
 	checkAppends(t, ck.Get("0"), counts)
 
 	ck.Put("aaa", "bbb")

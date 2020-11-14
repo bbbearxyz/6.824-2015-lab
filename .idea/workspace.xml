@@ -26,6 +26,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pbservice/test_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/test_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewservice/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewservice/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +63,72 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
+  <component name="RunManager" selected="Go Test.TestConcurrentSameUnreliable in pbservice">
+    <configuration name="TestConcurrentSameUnreliable in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestConcurrentSameUnreliable\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestPartition1 in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestPartition1\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestPartition2 in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestPartition2\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestRepeatedCrash in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestRepeatedCrash\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestRepeatedCrashUnreliable in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestRepeatedCrashUnreliable\E$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestConcurrentSameUnreliable in pbservice" />
+        <item itemvalue="Go Test.TestPartition2 in pbservice" />
+        <item itemvalue="Go Test.TestPartition1 in pbservice" />
+        <item itemvalue="Go Test.TestRepeatedCrashUnreliable in pbservice" />
+        <item itemvalue="Go Test.TestRepeatedCrash in pbservice" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -82,6 +150,22 @@
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
     <state x="360" y="191" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1792.1013@0.23.1792.1013" timestamp="1605227518294" />
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom" timestamp="1605368452260">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452260" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center" timestamp="1605368452259">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452259" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left" timestamp="1605368452259">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452259" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right" timestamp="1605368452260">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452260" />
     <state x="397" y="168" key="SettingsEditor" timestamp="1605265032379">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
