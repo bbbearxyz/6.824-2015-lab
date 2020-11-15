@@ -1,6 +1,8 @@
 package viewservice
 
-import "net/rpc"
+import (
+	"net/rpc"
+)
 import "fmt"
 
 //
@@ -63,7 +65,7 @@ func (ck *Clerk) Ping(viewnum uint) (View, error) {
 	// send an RPC request, wait for the reply.
 	ok := call(ck.server, "ViewServer.Ping", args, &reply)
 	if ok == false {
-		return View{}, fmt.Errorf("Ping(%v) failed", viewnum)
+		return View{Viewnum: 0}, fmt.Errorf("Ping(%v) failed", viewnum)
 	}
 
 	return reply.View, nil

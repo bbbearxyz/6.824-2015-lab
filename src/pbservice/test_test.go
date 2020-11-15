@@ -1,6 +1,11 @@
 package pbservice
 
-import "viewservice"
+import (
+	"math/rand"
+	"strings"
+	"sync"
+	"viewservice"
+)
 import "fmt"
 import "io"
 import "net"
@@ -8,11 +13,8 @@ import "testing"
 import "time"
 import "log"
 import "runtime"
-import "math/rand"
 import "os"
-import "sync"
 import "strconv"
-import "strings"
 import "sync/atomic"
 
 func check(ck *Clerk, key string, value string) {
@@ -888,6 +890,8 @@ func TestRepeatedCrashUnreliable(t *testing.T) {
 	time.Sleep(time.Second)
 }
 
+// Test Partition
+
 func proxy(t *testing.T, port string, delay *int32) {
 	portx := port + "x"
 	os.Remove(portx)
@@ -1035,9 +1039,12 @@ func TestPartition1(t *testing.T) {
 
 	fmt.Printf("  ... Passed\n")
 
+
 	s1.kill()
 	s2.kill()
 	vs.Kill()
+
+
 }
 
 func TestPartition2(t *testing.T) {
@@ -1142,3 +1149,4 @@ func TestPartition2(t *testing.T) {
 	s3.kill()
 	vs.Kill()
 }
+

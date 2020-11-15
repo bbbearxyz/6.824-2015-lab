@@ -116,43 +116,32 @@ func (vs *ViewServer) Get(args *GetArgs, reply *GetReply) error {
 func (vs *ViewServer) tick() {
 
 	// Your code here.
-	timer := time.After(PingInterval)
-
-	for {
-		select {
-		case <- timer:
-			timer = time.After(PingInterval)
-			// 判断是否该进行替换了
-			// 如果确定primary已经dead了
-			vs.mu.Lock()
-			if vs.isAcked && vs.currentView.Primary != "" && time.Now().Sub(vs.timeRecord[vs.currentView.Primary]) > DeadPings * PingInterval {
-				vs.nextView.Viewnum = uint(int(vs.currentView.Viewnum) + 1)
-				vs.nextView.Primary = vs.currentView.Backup
-				if vs.currentView.Backup == "" {
-					vs.isAcked = true
-				} else {
-					vs.isAcked = false
-				}
-				vs.nextView.Backup = vs.idle
-				vs.idle = ""
-				vs.currentView = vs.nextView
-				vs.nextView = View{}
-				fmt.Printf("%s become primary\n", vs.currentView.Primary)
-			}
-			if vs.isAcked && vs.currentView.Backup != "" && time.Now().Sub(vs.timeRecord[vs.currentView.Backup]) > DeadPings * PingInterval {
-				// 自动移除dead backup
-				vs.nextView.Viewnum = uint(int(vs.currentView.Viewnum) + 1)
-				vs.nextView.Primary = vs.currentView.Primary
-				vs.isAcked = false
-				vs.nextView.Backup = vs.idle
-				vs.idle = ""
-				vs.currentView = vs.nextView
-				vs.nextView = View{}
-
-			}
-			vs.mu.Unlock()
-
+	vs.mu.Lock()
+	defer vs.mu.Unlock()
+	if vs.isAcked && vs.currentView.Primary != "" && time.Now().Sub(vs.timeRecord[vs.currentView.Primary]) > DeadPings * PingInterval {
+		vs.nextView.Viewnum = uint(int(vs.currentView.Viewnum) + 1)
+		vs.nextView.Primary = vs.currentView.Backup
+		if vs.currentView.Backup == "" {
+			vs.isAcked = true
+		} else {
+			vs.isAcked = false
 		}
+		vs.nextView.Backup = vs.idle
+		vs.idle = ""
+		vs.currentView = vs.nextView
+		vs.nextView = View{}
+		fmt.Printf("%s become primary\n", vs.currentView.Primary)
+	}
+	if vs.isAcked && vs.currentView.Backup != "" && time.Now().Sub(vs.timeRecord[vs.currentView.Backup]) > DeadPings * PingInterval {
+		// 自动移除dead backup
+		vs.nextView.Viewnum = uint(int(vs.currentView.Viewnum) + 1)
+		vs.nextView.Primary = vs.currentView.Primary
+		vs.isAcked = false
+		vs.nextView.Backup = vs.idle
+		vs.idle = ""
+		vs.currentView = vs.nextView
+		vs.nextView = View{}
+
 	}
 }
 

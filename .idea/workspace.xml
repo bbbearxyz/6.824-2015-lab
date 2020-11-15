@@ -24,9 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5cd26736-037c-4521-bc5e-086d9cad166b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pbservice/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pbservice/test_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/pbservice/test_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewservice/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewservice/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewservice/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewservice/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,7 +63,18 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
-  <component name="RunManager" selected="Go Test.TestConcurrentSameUnreliable in pbservice">
+  <component name="RunManager" selected="Go Test.TestConcurrentSameAppend in pbservice">
+    <configuration name="TestConcurrentSameAppend in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestConcurrentSameAppend\E$" />
+      <method v="2" />
+    </configuration>
     <configuration name="TestConcurrentSameUnreliable in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="6.824-2015-lab" />
       <working_directory value="$PROJECT_DIR$/src/pbservice" />
@@ -73,6 +84,17 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <pattern value="^\QTestConcurrentSameUnreliable\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestFailPut in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="6.824-2015-lab" />
+      <working_directory value="$PROJECT_DIR$/src/pbservice" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="pbservice" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestFailPut\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestPartition1 in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -97,35 +119,13 @@
       <pattern value="^\QTestPartition2\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestRepeatedCrash in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="6.824-2015-lab" />
-      <working_directory value="$PROJECT_DIR$/src/pbservice" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="pbservice" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <pattern value="^\QTestRepeatedCrash\E$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestRepeatedCrashUnreliable in pbservice" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="6.824-2015-lab" />
-      <working_directory value="$PROJECT_DIR$/src/pbservice" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="pbservice" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <pattern value="^\QTestRepeatedCrashUnreliable\E$" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestConcurrentSameAppend in pbservice" />
+        <item itemvalue="Go Test.TestFailPut in pbservice" />
+        <item itemvalue="Go Test.TestPartition1 in pbservice" />
         <item itemvalue="Go Test.TestConcurrentSameUnreliable in pbservice" />
         <item itemvalue="Go Test.TestPartition2 in pbservice" />
-        <item itemvalue="Go Test.TestPartition1 in pbservice" />
-        <item itemvalue="Go Test.TestRepeatedCrashUnreliable in pbservice" />
-        <item itemvalue="Go Test.TestRepeatedCrash in pbservice" />
       </list>
     </recent_temporary>
   </component>
@@ -150,29 +150,49 @@
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
     <state x="360" y="191" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1792.1013@0.23.1792.1013" timestamp="1605227518294" />
-    <state width="1750" height="275" key="GridCell.Tab.0.bottom" timestamp="1605368452260">
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom" timestamp="1605404962066">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452260" />
-    <state width="1750" height="275" key="GridCell.Tab.0.center" timestamp="1605368452259">
+    <state width="1750" height="275" key="GridCell.Tab.0.bottom/0.23.1792.1013@0.23.1792.1013" timestamp="1605404962066" />
+    <state width="1750" height="275" key="GridCell.Tab.0.center" timestamp="1605404962065">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452259" />
-    <state width="1750" height="275" key="GridCell.Tab.0.left" timestamp="1605368452259">
+    <state width="1750" height="275" key="GridCell.Tab.0.center/0.23.1792.1013@0.23.1792.1013" timestamp="1605404962065" />
+    <state width="1750" height="275" key="GridCell.Tab.0.left" timestamp="1605404962065">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452259" />
-    <state width="1750" height="275" key="GridCell.Tab.0.right" timestamp="1605368452260">
+    <state width="1750" height="275" key="GridCell.Tab.0.left/0.23.1792.1013@0.23.1792.1013" timestamp="1605404962065" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right" timestamp="1605404962066">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1013@0.23.1792.1013" timestamp="1605368452260" />
+    <state width="1750" height="275" key="GridCell.Tab.0.right/0.23.1792.1013@0.23.1792.1013" timestamp="1605404962066" />
+    <state width="1750" height="340" key="GridCell.Tab.1.bottom" timestamp="1605402680913">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="340" key="GridCell.Tab.1.bottom/0.23.1792.1013@0.23.1792.1013" timestamp="1605402680913" />
+    <state width="1750" height="340" key="GridCell.Tab.1.center" timestamp="1605402680912">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="340" key="GridCell.Tab.1.center/0.23.1792.1013@0.23.1792.1013" timestamp="1605402680912" />
+    <state width="1750" height="340" key="GridCell.Tab.1.left" timestamp="1605402680912">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="340" key="GridCell.Tab.1.left/0.23.1792.1013@0.23.1792.1013" timestamp="1605402680912" />
+    <state width="1750" height="340" key="GridCell.Tab.1.right" timestamp="1605402680913">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state width="1750" height="340" key="GridCell.Tab.1.right/0.23.1792.1013@0.23.1792.1013" timestamp="1605402680913" />
     <state x="397" y="168" key="SettingsEditor" timestamp="1605265032379">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
     <state x="397" y="168" key="SettingsEditor/0.23.1792.1013@0.23.1792.1013" timestamp="1605265032379" />
-    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup" timestamp="1605264885654">
+    <state x="436" y="265" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1605402554903">
       <screen x="0" y="23" width="1792" height="1013" />
     </state>
-    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup/0.23.1792.1013@0.23.1792.1013" timestamp="1605264885654" />
+    <state x="436" y="265" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1792.1013@0.23.1792.1013" timestamp="1605402554903" />
+    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup" timestamp="1605404015068">
+      <screen x="0" y="23" width="1792" height="1013" />
+    </state>
+    <state x="561" y="247" width="670" height="676" key="search.everywhere.popup/0.23.1792.1013@0.23.1792.1013" timestamp="1605404015068" />
   </component>
 </project>

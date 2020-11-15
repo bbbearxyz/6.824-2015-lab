@@ -43,6 +43,7 @@ func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 	}
 	if pb.dumpMap[args.ClerkId] >= args.ReqId {
 		reply.Err = OK
+		reply.Value = pb.dataMap[args.Key]
 		return nil
 	}
 
@@ -77,6 +78,7 @@ func (pb *PBServer) Get(args *GetArgs, reply *GetReply) error {
 func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error {
 
 	// Your code here.
+
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
 	if pb.curView.Primary != pb.me {
@@ -106,13 +108,15 @@ func (pb *PBServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) error 
 	}
 	if args.Op == "Put" {
 		pb.dataMap[args.Key] = args.Value
-		log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, args.Value)
+		// log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, args.Value)
 	} else {
 		pb.dataMap[args.Key] += args.Value
-		log.Printf("%s get append, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
+		// log.Printf("%s get append, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
 	}
 	pb.dumpMap[args.ClerkId] = args.ReqId
 	reply.Err = OK
+	// log.Printf("%s map is ", pb.me)
+	// log.Println(&pb.dataMap)
 	return nil
 }
 // 会有两种类型 一个是发送get/put/append命令 一种是发送完整的信息
@@ -139,7 +143,6 @@ type SendReply struct {
 func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) error {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-
 	if args.Host == pb.curView.Primary {
 		if args.Type == 0 {
 			if pb.dumpMap[args.ClerkId] >= args.ReqId {
@@ -150,13 +153,15 @@ func (pb *PBServer) ReadBackupOp(args *SendArgs, reply *SendReply) error {
 				// do nothing
 			} else if args.Op == "Append" {
 				pb.dataMap[args.Key] += args.Value
-				log.Printf("%s append put, key is %s, value is %s", pb.me, args.Key, args.Value)
+				// log.Printf("%s append put, key is %s, value is %s", pb.me, args.Key, args.Value)
 			} else if args.Op == "Put" {
 				pb.dataMap[args.Key] = args.Value
-				log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
+				// log.Printf("%s get put, key is %s, value is %s", pb.me, args.Key, pb.dataMap[args.Key])
 			}
 			pb.dumpMap[args.ClerkId] = args.ReqId
 			reply.SendErr = OK
+			// log.Printf("%s map is ", pb.me)
+			// log.Println(&pb.dataMap)
 			return nil
 		} else {
 			pb.dataMap = args.DataMap
@@ -181,8 +186,10 @@ func (pb *PBServer) tick() {
 
 	// Your code here.
 	view, _ := pb.vs.Ping(pb.curView.Viewnum)
-	if view.Viewnum != pb.curView.Viewnum {
+	if view.Viewnum != 0 && view.Viewnum != pb.curView.Viewnum {
 		log.Printf("view num change to %d.", view.Viewnum)
+		// log.Printf("%s map is ", pb.me)
+		// log.Println(&pb.dataMap)
 		if view.Primary == pb.me && view.Backup != "" && pb.curView.Backup != view.Backup {
 			args := &SendArgs{
 				Type: 1,
