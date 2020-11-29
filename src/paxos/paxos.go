@@ -55,6 +55,19 @@ type Paxos struct {
 
 
 	// Your data here.
+
+	// information about instants
+	information map[int] *accState
+
+
+}
+
+type accState struct {
+	// highest prepare seen
+	n_p int
+	// highest accept seen
+	n_a int
+	v_a interface{}
 }
 
 //
@@ -103,6 +116,115 @@ func call(srv string, name string, args interface{}, reply interface{}) bool {
 //
 func (px *Paxos) Start(seq int, v interface{}) {
 	// Your code here.
+	px.startAgreement(seq, v)
+	return
+
+}
+
+func (px *Paxos) startAgreement(seq int, v interface{}) {
+	for status, _ := px.Status(seq); status != Pending; {
+		prepareCh := make(chan *prepareReply)
+		px.sendPrepare(seq, prepareCh)
+		voteNow := 0
+		voteNeeded := len(px.peers) / 2 + 1
+		restVote := len(px.peers)
+		for {
+			select {
+			case prepare := <-prepareCh: {
+
+			}
+
+			}
+		}
+
+	}
+}
+
+func (px *Paxos) sendPrepare(seq int, ch chan *prepareReply) {
+	state, exist := px.information[seq]
+	args := &prepareArgs{}
+	args.Ch = ch
+	if exist == true {
+		args.N = state.n_p
+	} else {
+		args.N = 1
+	}
+	args.Seq = seq
+	for i := 0; i < len(px.peers); i ++ {
+		if i == px.me {
+			// think about it
+		} else {
+			reply := &prepareReply{}
+			reply.Is_ok = false
+			go func(i int) {
+				call(px.peers[i], "px.PrepareHandler", args, reply)
+				ch <- reply
+			}(i)
+		}
+	}
+	return
+}
+
+type prepareArgs struct {
+	N int
+	Ch chan *prepareReply
+	Seq int
+}
+
+type prepareReply struct {
+	Is_ok bool
+	N int
+	N_a int
+	N_v interface{}
+}
+
+type acceptArgs struct {
+	N int
+	V interface{}
+	Seq int
+}
+
+type acceptReply struct {
+	Is_ok bool
+	N int
+}
+
+func (px *Paxos) PrepareHandler(args *prepareArgs, reply *prepareReply) error {
+	// 判断information是否存在
+	_, exist := px.information[args.Seq]
+	if exist == false {
+		px.information[args.Seq] = &accState{0, 0, 0}
+	}
+
+	if args.N > px.information[args.Seq].n_p {
+		px.information[args.Seq].n_p = args.N
+		reply.Is_ok = true
+		reply.N = args.N
+		reply.N_a = px.information[args.Seq].n_a
+		reply.N_v = px.information[args.Seq].v_a
+	} else {
+		reply.Is_ok = false
+	}
+	return nil
+}
+
+func (px *Paxos) AcceptHandler(args *acceptArgs, reply *acceptReply) error {
+	// 判断information是否存在
+	_, exist := px.information[args.Seq]
+	if exist == false {
+		px.information[args.Seq] = &accState{0, 0, 0}
+	}
+
+	if args.N >= px.information[args.Seq].n_p {
+		px.information[args.Seq].n_p = args.N
+		px.information[args.Seq].n_a = args.N
+		px.information[args.Seq].v_a = args.V
+		reply.Is_ok = true
+		reply.N = args.N
+	} else {
+		reply.Is_ok = false
+	}
+	return nil
 }
 
 //
